@@ -169,7 +169,7 @@ create table endpoint.site_settings (
     site_title text,
     site_url text,
 
-    smtp_server_id uuid not null references email.smtp_server(id),
+    smtp_server_id uuid not null,
     auth_from_email text
 );
 
@@ -1902,6 +1902,14 @@ create table endpoint.user (
 );
 
 
+/*
+
+regarding triggers on the user table:
+this behavior appears to be wrong.  user should be considered a metadata table
+on role.  i could see creating a new role when you insert into user (which is
+what the insert trigger does) but switching a user from one role to the other
+should actually create that role.
+
 -- Trigger on endpoint.user for insert
 create or replace function endpoint.user_insert() returns trigger as $$
 
@@ -1970,6 +1978,7 @@ language plpgsql;
 create trigger endpoint_user_insert_trigger before insert on endpoint.user for each row execute procedure endpoint.user_insert();
 create trigger endpoint_user_update_trigger before update on endpoint.user for each row execute procedure endpoint.user_update();
 create trigger endpoint_user_delete_trigger before delete on endpoint.user for each row execute procedure endpoint.user_delete();
+*/
 
 
 /******************************************************************************
@@ -2039,6 +2048,7 @@ as $$
         insert into meta.role_inheritance (role_id, member_role_id) values (meta.role_id('user'), _role_id);
 
         -- Send email to {email}
+/*
         if send_email = true then
             perform email.send(
                 (select smtp_server_id from endpoint.site_settings where active=true),
@@ -2048,6 +2058,7 @@ as $$
                 'Use this code to activate your account ' || _user_row.activation_code
             );
         end if;
+*/
 
         code := 0;
         role_name := (_role_id).name;
@@ -2090,6 +2101,7 @@ as $$
         update meta.role set can_login = true where id = _role_id;
 
         -- 4. send email?
+/*
         if send_email then
             perform email.send(
                 (select smtp_server_id from endpoint.site_settings where active=true),
@@ -2099,6 +2111,7 @@ as $$
                 'Your account is now active.'
             );
         end if;
+*/
 
         return;
     end
@@ -2208,6 +2221,7 @@ $$;
  * endpoint.email
  ******************************************************************************/
 
+/*
 create function endpoint.email (from_email text, to_email text[], subject text, body text) returns void as $$
 
 # -- Import smtplib for the actual sending function
@@ -2226,6 +2240,7 @@ s.sendmail(from_email, to_email, msg.as_string())
 s.quit()
 
 $$ language plpythonu;
+*/
 
 
 
@@ -2265,6 +2280,7 @@ $$ language sql;
  * Renders a template
  *******************************************************************************/
 
+/*
 create or replace function endpoint.template_render(
     template_id uuid,
     route_args json default '{}', -- these are the args passed in from the template_route record
@@ -2315,6 +2331,7 @@ create or replace function endpoint.template_render(
     return html;
 $$ language plv8;
 
+*/
 
 
 /*******************************************************************************

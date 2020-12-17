@@ -4,14 +4,22 @@
 
 # PostgreSQL connection settings
 [Database]
-#Connection = "postgres://?path=/var/run/postgresql&database=aquameta"
-Connection = "postgres://?database=aquameta"
+User = "eric"
+Password = "whatevz"
+Host = "localhost"
+Port = 9876
+DatabaseName = "aquameta"
+RuntimePath = "./postgres"
+
+[User]
+Name = "Eric Hanson"
+Email = "eric@aquameta.com"
 
 [Webserver]
 #  Web server settings
-IP = "0.0.0.0"
-Port = "4443"
-Protocol = "https" # http or https
+IP = "127.0.0.1"
+Port = "4444"
+Protocol = "http" # http or https
 SSLCertificateFile = "server.crt" # can use absolute or relative paths, relative is relative to current working directory (?)
 SSLKeyFile = "server.key"
 
